@@ -223,6 +223,7 @@ RUN cd /home/FFmpeg && \
     make install DESTDIR="/home/build"
 
 
+
 # Clean up after build
 RUN rm -rf /home/build/usr/include && \
     rm -rf /home/build/usr/share/doc && \
@@ -241,4 +242,5 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y -q --no-
 
 # Install
 COPY --from=build /home/build /
+ENV LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 
