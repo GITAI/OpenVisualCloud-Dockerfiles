@@ -37,10 +37,10 @@ jobs:
         type: string
         default: ffmpeg
       test:
-        type: bool
+        type: boolean
         default: true
       deploy:
-        type: bool
+        type: boolean
         default: true
     machine:
       image: ubuntu-1604:201903-01
