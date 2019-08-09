@@ -1,0 +1,59 @@
+version: 2.1
+
+jobs:
+  build:
+    parameters:
+      cpu:
+        type: string
+        default: Xeon
+      os_name:
+        type: string
+        default: ubuntu
+      os_version:
+        type: string
+        default: '16.04'
+      category:
+        type: string
+        default: media
+      app:
+        type: string
+        default: ffmpeg
+    docker:
+      - image: <<parameters.os_name>>:<<parameters.os_version>>
+    steps:
+      - checkout
+      - run:
+          name: cmake
+          command: mkdir -p build && cd build && cmake ..
+      - run:
+          name: build
+          command: |
+            cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && make
+      - run:
+          name: test
+          command: |
+            cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && ctest -V
+
+workflows:
+  tests:
+    jobs:
+      - build:
+          cpu: Xeon
+          os_version: '16.04'
+          category: media
+          app: ffmpeg
+      - build:
+          cpu: Xeon
+          os_version: '18.04'
+          category: media
+          app: ffmpeg
+      - build:
+          cpu: XeonE3
+          os_version: '16.04'
+          category: media
+          app: ffmpeg
+      - build:
+          cpu: XeonE3
+          os_version: '18.04'
+          category: media
+          app: ffmpeg
