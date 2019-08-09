@@ -36,24 +36,37 @@ jobs:
       app:
         type: string
         default: ffmpeg
+      test:
+        type: bool
+        default: true
+      deploy:
+        type: bool
+        default: true
     machine:
       image: ubuntu-1604:201903-01
     working_directory: /home/circleci/project
     steps:
       - attach_workspace:
           at: /home/circleci/project
-      # - run:
-      #     name: copy artifacts
-      #     command: |
-      #       cp -r /home/src/project/project $HOME/src
       - run:
           name: build
           command: |
             cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && make
       - run:
+          when: <<parameters.test>>
           name: test
           command: |
             cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && ctest -V
+      - run:
+          when: <<parameters.deploy>>
+          name: deploy
+          command: |
+            cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>>
+            eval $(cat build.sh | grep IMAGE)
+            eval $(cat build.sh | grep VERSION)
+            docker tag openvisualclouds/$IMAGE:$VERSION gitaiinc/openvisualcloud-$IMAGE:$VERSION
+            docker login -u $DOCKER_USER -p $DOCKER_PASS
+            docker push gitaiinc/openvisualcloud-$IMAGE:$VERSION
 
 workflows:
   tests:
