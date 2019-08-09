@@ -1,6 +1,24 @@
 version: 2.1
 
 jobs:
+  prepare:
+    docker:
+      - image: ubuntu:xenial
+    working_directory: /home/circleci/project
+    steps:
+      - checkout
+      - run:
+          name: install prerequisities
+          command: |
+            apt-get -qq -y update && apt-get -qq -y install git cmake
+      - run:
+          name: run cmake
+          command: |
+            mkdir -p build && cd build && cmake ..
+      - persist_to_workspace:
+          root: /home/circleci/project
+          paths:
+            - .
   build:
     parameters:
       cpu:
@@ -18,42 +36,54 @@ jobs:
       app:
         type: string
         default: ffmpeg
-    docker:
-      - image: <<parameters.os_name>>:<<parameters.os_version>>
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: /home/circleci/project
     steps:
-      - checkout
-      - run:
-          name: cmake
-          command: mkdir -p build && cd build && cmake ..
+      - attach_workspace:
+          at: /home/circleci/project
+      # - run:
+      #     name: copy artifacts
+      #     command: |
+      #       cp -r /home/src/project/project $HOME/src
       - run:
           name: build
           command: |
-            cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && make
+            cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && make
       - run:
           name: test
           command: |
-            cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && ctest -V
+            cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && ctest -V
 
 workflows:
   tests:
     jobs:
+      - prepare
       - build:
           cpu: Xeon
           os_version: '16.04'
           category: media
           app: ffmpeg
+          requires:
+            - prepare
       - build:
           cpu: Xeon
           os_version: '18.04'
           category: media
           app: ffmpeg
+          requires:
+            - prepare
       - build:
           cpu: XeonE3
           os_version: '16.04'
           category: media
           app: ffmpeg
+          requires:
+            - prepare
       - build:
           cpu: XeonE3
           os_version: '18.04'
           category: media
           app: ffmpeg
+          requires:
+            - prepare
