@@ -90,17 +90,3 @@ workflows:
           app: ffmpeg
           requires:
             - prepare
-      - build:
-          cpu: XeonE3
-          os_version: '16.04'
-          category: media
-          app: ffmpeg
-          requires:
-            - prepare
-      - build:
-          cpu: XeonE3
-          os_version: '18.04'
-          category: media
-          app: ffmpeg
-          requires:
-            - prepare
