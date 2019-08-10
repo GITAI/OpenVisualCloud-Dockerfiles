@@ -68,7 +68,7 @@ jobs:
                   cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>>
                   eval $(cat build.sh | grep IMAGE)
                   eval $(cat build.sh | grep VERSION)
-                  docker tag openvisualclouds/$IMAGE:$VERSION gitaiinc/openvisualcloud-$IMAGE:$VERSION
+                  docker tag openvisualcloud/$IMAGE:$VERSION gitaiinc/openvisualcloud-$IMAGE:$VERSION
                   docker login -u $DOCKER_USER -p $DOCKER_PASS
                   docker push gitaiinc/openvisualcloud-$IMAGE:$VERSION
 
