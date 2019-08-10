@@ -52,21 +52,25 @@ jobs:
           name: build
           command: |
             cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && make
-      - run:
-          when: <<parameters.test>>
-          name: test
-          command: |
-            cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && ctest -V
-      - run:
-          when: <<parameters.deploy>>
-          name: deploy
-          command: |
-            cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>>
-            eval $(cat build.sh | grep IMAGE)
-            eval $(cat build.sh | grep VERSION)
-            docker tag openvisualclouds/$IMAGE:$VERSION gitaiinc/openvisualcloud-$IMAGE:$VERSION
-            docker login -u $DOCKER_USER -p $DOCKER_PASS
-            docker push gitaiinc/openvisualcloud-$IMAGE:$VERSION
+      - when:
+          condition: <<parameters.test>>
+          steps:
+            - run:
+                name: test
+                command: |
+                  cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && ctest -V
+      - when:
+          condition: <<parameters.deploy>>
+          steps:
+            - run:
+                name: deploy
+                command: |
+                  cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>>
+                  eval $(cat build.sh | grep IMAGE)
+                  eval $(cat build.sh | grep VERSION)
+                  docker tag openvisualclouds/$IMAGE:$VERSION gitaiinc/openvisualcloud-$IMAGE:$VERSION
+                  docker login -u $DOCKER_USER -p $DOCKER_PASS
+                  docker push gitaiinc/openvisualcloud-$IMAGE:$VERSION
 
 workflows:
   tests:
