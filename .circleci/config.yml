@@ -81,6 +81,8 @@ workflows:
           os_version: '16.04'
           category: media
           app: ffmpeg
+          test: true
+          deploy: false
           requires:
             - prepare
       - build:
@@ -88,5 +90,36 @@ workflows:
           os_version: '18.04'
           category: media
           app: ffmpeg
+          test: true
+          deploy: false
+          requires:
+            - prepare
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 18 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - prepare
+      - build:
+          cpu: Xeon
+          os_version: '16.04'
+          category: media
+          app: ffmpeg
+          test: false
+          deploy: true
+          requires:
+            - prepare
+      - build:
+          cpu: Xeon
+          os_version: '18.04'
+          category: media
+          app: ffmpeg
+          test: false
+          deploy: true
           requires:
             - prepare
