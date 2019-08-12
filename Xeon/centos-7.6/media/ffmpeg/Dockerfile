@@ -50,7 +50,7 @@ ARG OGG_REPO=https://downloads.xiph.org/releases/ogg/libogg-${OGG_VER}.tar.xz
 
 RUN wget -O - ${OGG_REPO} | tar xJ && \
     cd libogg-${OGG_VER} && \
-    ./configure --prefix="/usr" --libdir=/usr/lib64 --enable-shared && \
+    ./configure --prefix="/usr/local" --libdir=/usr/lib64 --enable-shared && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install
@@ -61,7 +61,7 @@ ARG VORBIS_REPO=https://downloads.xiph.org/releases/vorbis/libvorbis-${VORBIS_VE
 
 RUN wget -O - ${VORBIS_REPO} | tar xJ && \
     cd libvorbis-${VORBIS_VER} && \
-    ./configure --prefix="/usr" --libdir=/usr/lib64 --enable-shared && \
+    ./configure --prefix="/usr/local" --libdir=/usr/lib64 --enable-shared && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install
@@ -72,7 +72,7 @@ ARG MP3LAME_REPO=https://sourceforge.net/projects/lame/files/lame/${MP3LAME_VER}
 
 RUN wget -O - ${MP3LAME_REPO} | tar xz && \
     cd lame-${MP3LAME_VER} && \
-    ./configure --prefix="/usr" --libdir=/usr/lib64 --enable-shared --enable-nasm && \
+    ./configure --prefix="/usr/local" --libdir=/usr/lib64 --enable-shared --enable-nasm && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install
@@ -84,7 +84,7 @@ ARG FDK_AAC_REPO=https://github.com/mstorsjo/fdk-aac/archive/${FDK_AAC_VER}.tar.
 RUN wget -O - ${FDK_AAC_REPO} | tar xz && mv fdk-aac-${FDK_AAC_VER#v} fdk-aac && \
     cd fdk-aac && \
     autoreconf -fiv && \
-    ./configure --prefix="/usr" --libdir=/usr/lib64 --enable-shared && \
+    ./configure --prefix="/usr/local" --libdir=/usr/lib64 --enable-shared && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install
@@ -96,7 +96,7 @@ ARG OPUS_REPO=https://archive.mozilla.org/pub/opus/opus-${OPUS_VER}.tar.gz
 
 RUN wget -O - ${OPUS_REPO} | tar xz && \
     cd opus-${OPUS_VER} && \
-    ./configure --prefix="/usr" --libdir=/usr/lib64 --enable-shared && \
+    ./configure --prefix="/usr/local" --libdir=/usr/lib64 --enable-shared && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install
@@ -108,7 +108,7 @@ ARG VPX_REPO=https://chromium.googlesource.com/webm/libvpx.git
 RUN git clone ${VPX_REPO} && \
     cd libvpx && \
     git checkout ${VPX_VER} && \
-    ./configure --prefix="/usr" --libdir=/usr/lib64 --enable-shared --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=nasm && \
+    ./configure --prefix="/usr/local" --libdir=/usr/lib64 --enable-shared --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=nasm && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install
@@ -122,7 +122,7 @@ RUN  git clone ${AOM_REPO} && \
      mkdir aom/aom_build && \
      cd aom/aom_build && \
      git checkout ${AOM_VER} && \
-     cmake -DBUILD_SHARED_LIBS=ON -DENABLE_NASM=ON -DENABLE_TESTS=OFF -DENABLE_DOCS=OFF -DCMAKE_INSTALL_PREFIX="/usr" -DLIB_INSTALL_DIR=/usr/lib64 .. && \
+     cmake -DBUILD_SHARED_LIBS=ON -DENABLE_NASM=ON -DENABLE_TESTS=OFF -DENABLE_DOCS=OFF -DCMAKE_INSTALL_PREFIX="/usr/local" -DLIB_INSTALL_DIR=/usr/lib64 .. && \
      make -j8 && \
      make install DESTDIR="/home/build" && \
      make install
@@ -134,7 +134,7 @@ ARG X264_REPO=https://github.com/mirror/x264
 RUN  git clone ${X264_REPO} && \
      cd x264 && \
      git checkout ${X264_VER} && \
-     ./configure --prefix="/usr" --libdir=/usr/lib64 --enable-shared && \
+     ./configure --prefix="/usr/local" --libdir=/usr/lib64 --enable-shared && \
      make -j8 && \
      make install DESTDIR="/home/build" && \
      make install
@@ -148,7 +148,7 @@ RUN  yum install -y -q numactl-devel libpciaccess-devel
 
 RUN  wget -O - ${X265_REPO} | tar xz && mv x265-${X265_VER} x265 && \
      cd x265/build/linux && \
-     cmake -DBUILD_SHARED_LIBS=ON -DENABLE_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr -DLIB_INSTALL_DIR=/usr/lib64 ../../source && \
+     cmake -DBUILD_SHARED_LIBS=ON -DENABLE_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local -DLIB_INSTALL_DIR=/usr/lib64 ../../source && \
      make -j8 && \
      make install DESTDIR="/home/build" && \
      make install
@@ -165,7 +165,7 @@ RUN git clone ${SVT_HEVC_REPO} && \
     git checkout ${SVT_HEVC_VER} && \
     mkdir -p ../../Bin/Release && \
     ( source /opt/rh/devtoolset-7/enable && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install )
@@ -179,7 +179,7 @@ RUN git clone ${SVT_AV1_REPO} && \
     cd SVT-AV1/Build/linux && \
     git checkout ${SVT_AV1_VER} && \
     mkdir -p ../../Bin/Release && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install
@@ -197,7 +197,7 @@ RUN git clone ${SVT_VP9_REPO} && \
     git checkout ${SVT_VP9_VER} && \
     mkdir -p ../../Bin/Release && \
   ( source /opt/rh/devtoolset-7/enable && \
-    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
+    cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_LIBDIR=lib64 -DCMAKE_ASM_NASM_COMPILER=yasm ../.. && \
     make -j8 && \
     make install DESTDIR=/home/build && \
     make install )
@@ -227,9 +227,10 @@ RUN cd /home/FFmpeg; \
 
 # Compile FFmpeg
 RUN cd /home/FFmpeg && \
-    ./configure --prefix="/usr" --libdir=/usr/lib64 --extra-libs="-lpthread -lm" --enable-shared --enable-gpl --enable-libass --enable-libfreetype --disable-xlib --disable-sdl2 --enable-openssl --enable-nonfree --disable-vaapi --disable-hwaccels --disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages --enable-libfdk-aac --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libaom --enable-libsvthevc --enable-libsvtav1  && \
+    ./configure --prefix="/usr/local" --libdir=/usr/lib64 --extra-libs="-lpthread -lm" --enable-shared --enable-gpl --enable-libass --enable-libfreetype --disable-xlib --disable-sdl2 --enable-openssl --enable-nonfree --disable-vaapi --disable-hwaccels --disable-doc --disable-htmlpages --disable-manpages --disable-podpages --disable-txtpages --enable-libfdk-aac --enable-libmp3lame --enable-libopus --enable-libvorbis --enable-libvpx --enable-libx264 --enable-libx265 --enable-libaom --enable-libsvthevc --enable-libsvtav1  && \
     make -j8 && \
     make install DESTDIR="/home/build"
+
 
 
 # Clean up after build
@@ -252,4 +253,5 @@ RUN yum install -y epel-release; \
 
 # Install
 COPY --from=build /home/build /
+ENV LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH
 
