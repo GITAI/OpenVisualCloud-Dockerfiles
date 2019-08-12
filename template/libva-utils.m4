@@ -4,7 +4,7 @@ ARG LIBVA_UTILS_REPO=https://github.com/intel/libva-utils/archive/${LIBVA_UTILS_
 
 RUN wget -O - ${LIBVA_UTILS_REPO} | tar xz; \
     cd libva-utils-${LIBVA_UTILS_VER}; \
-    ./autogen.sh --prefix=/usr --libdir=/usr/ifelse(index(DOCKER_IMAGE,ubuntu),-1,lib64,lib/x86_64-linux-gnu); \
+    ./autogen.sh --prefix=/usr/local --libdir=/usr/ifelse(index(DOCKER_IMAGE,ubuntu),-1,lib64,local/lib); \
     make -j8; \
     make install DESTDIR=/home/build; \
     make install;
