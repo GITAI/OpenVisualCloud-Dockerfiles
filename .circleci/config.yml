@@ -1,0 +1,125 @@
+version: 2.1
+
+jobs:
+  prepare:
+    docker:
+      - image: ubuntu:xenial
+    working_directory: /home/circleci/project
+    steps:
+      - checkout
+      - run:
+          name: install prerequisities
+          command: |
+            apt-get -qq -y update && apt-get -qq -y install git cmake
+      - run:
+          name: run cmake
+          command: |
+            mkdir -p build && cd build && cmake ..
+      - persist_to_workspace:
+          root: /home/circleci/project
+          paths:
+            - .
+  build:
+    parameters:
+      cpu:
+        type: string
+        default: Xeon
+      os_name:
+        type: string
+        default: ubuntu
+      os_version:
+        type: string
+        default: '16.04'
+      category:
+        type: string
+        default: media
+      app:
+        type: string
+        default: ffmpeg
+      test:
+        type: boolean
+        default: true
+      deploy:
+        type: boolean
+        default: true
+    machine:
+      image: ubuntu-1604:201903-01
+    working_directory: /home/circleci/project
+    steps:
+      - attach_workspace:
+          at: /home/circleci/project
+      - run:
+          name: build
+          command: |
+            cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && make
+      - when:
+          condition: <<parameters.test>>
+          steps:
+            - run:
+                name: test
+                command: |
+                  cd build/<<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>> && ctest -V
+      - when:
+          condition: <<parameters.deploy>>
+          steps:
+            - run:
+                name: deploy
+                command: |
+                  cd <<parameters.cpu>>/<<parameters.os_name>>-<<parameters.os_version>>/<<parameters.category>>/<<parameters.app>>
+                  eval $(cat build.sh | grep IMAGE)
+                  eval $(cat build.sh | grep VERSION)
+                  docker tag openvisualcloud/$IMAGE:$VERSION gitaiinc/openvisualcloud-$IMAGE:$VERSION
+                  docker login -u $DOCKER_USER -p $DOCKER_PASS
+                  docker push gitaiinc/openvisualcloud-$IMAGE:$VERSION
+
+workflows:
+  tests:
+    jobs:
+      - prepare
+      - build:
+          cpu: Xeon
+          os_version: '16.04'
+          category: media
+          app: ffmpeg
+          test: true
+          deploy: false
+          requires:
+            - prepare
+      - build:
+          cpu: Xeon
+          os_version: '18.04'
+          category: media
+          app: ffmpeg
+          test: true
+          deploy: false
+          requires:
+            - prepare
+
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 18 * * *"
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - prepare
+      - build:
+          cpu: Xeon
+          os_version: '16.04'
+          category: media
+          app: ffmpeg
+          test: false
+          deploy: true
+          requires:
+            - prepare
+      - build:
+          cpu: Xeon
+          os_version: '18.04'
+          category: media
+          app: ffmpeg
+          test: false
+          deploy: true
+          requires:
+            - prepare
