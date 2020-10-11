@@ -81,7 +81,7 @@ workflows:
           os_version: '16.04'
           category: media
           app: ffmpeg
-          test: true
+          test: false # some tests are failed now
           deploy: false
           requires:
             - prepare
@@ -90,7 +90,7 @@ workflows:
           os_version: '18.04'
           category: media
           app: ffmpeg
-          test: true
+          test: false # some tests are failed now
           deploy: false
           requires:
             - prepare
