@@ -75,8 +75,10 @@ jobs:
 workflows:
   tests:
     jobs:
-      - prepare
+      - prepare:
+          context: gitai_ci
       - build:
+          context: gitai_ci
           cpu: Xeon
           os_version: '16.04'
           category: media
@@ -86,6 +88,7 @@ workflows:
           requires:
             - prepare
       - build:
+          context: gitai_ci
           cpu: Xeon
           os_version: '18.04'
           category: media
@@ -105,8 +108,10 @@ workflows:
               only:
                 - master
     jobs:
-      - prepare
+      - prepare:
+          context: gitai_ci
       - build:
+          context: gitai_ci
           cpu: Xeon
           os_version: '16.04'
           category: media
@@ -116,6 +121,7 @@ workflows:
           requires:
             - prepare
       - build:
+          context: gitai_ci
           cpu: Xeon
           os_version: '18.04'
           category: media
